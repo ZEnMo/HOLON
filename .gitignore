@@ -1,3 +1,6 @@
 *autosave
+db.log
+db.lck
 
-
+# Etinput specific files
+.pytest_cache
