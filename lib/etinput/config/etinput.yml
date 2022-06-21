@@ -8,6 +8,9 @@
 #   divide_by:  When conversion is divide, specify by which ETM query result the item should be
 #               divided
 #
+# TODO: extend divide_by with type of value that is used for the division: etm_key and type, or a
+# factor
+
 
 buildings_heating_electricity_curve:
   type: curve

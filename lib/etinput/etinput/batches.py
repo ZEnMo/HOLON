@@ -4,7 +4,6 @@ from .curve import Curve
 
 class Batches:
     def __init__(self):
-        # TODO: do we want more endpoint info (like full endpoint including scenario)?
         self._curves = Batch('curves')
         self._nodes = Batch('nodes')
         self._queries = Batch('queries')
@@ -15,7 +14,7 @@ class Batches:
         yield self._queries
 
     def add(self, value):
-        '''Adds a Value to the correct Batcht'''
+        '''Adds a Value to the correct Batch'''
         if isinstance(value, Curve):
             self._curves.add(value)
         elif isinstance(value, Value):
@@ -24,6 +23,11 @@ class Batches:
         #     self._nodes.add(value)
         else:
             raise UnknownValueType(f'The object {value} could not be added to a batch')
+
+    def send(self):
+        '''Sends all the batches'''
+        for batch in self.each():
+            batch.send()
 
 class UnknownValueType(BaseException):
     pass

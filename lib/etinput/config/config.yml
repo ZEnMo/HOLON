@@ -1,0 +1,24 @@
+# Main configuration for the tool
+
+api_url: 'https://engine.energytransitionmodel.com/api/v3/scenarios/'
+
+scenario:
+  id: 922908
+  # TODO: create these attributes
+  # end_year: 2050
+  # dataset: nl2019
+  # create_new: false
+  # create_copy: false
+
+endpoints:
+  curves:
+    endpoint: '/curves/'
+    type: get
+  nodes:
+    endpoint: '/nodes/'
+    type: get
+  queries:
+    endpoint: '/'
+    type: put
+
+output_folder: 'Data/'
