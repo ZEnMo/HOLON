@@ -6,8 +6,11 @@ class DivideBy(BaseConverter):
         self.second_value = second_value
 
     def calculate(self):
-        # Return main value
-        pass
+        '''Calculates and updates the main_value'''
+        if not self.main_value.is_set():
+            return
+
+        self.main_value.divide_by(self.second_value)
 
     def required_for_calculation(self):
         '''Generator, returns all Values that should be arequested from the ETM'''

@@ -11,5 +11,9 @@ class Value:
 
         return True
 
+    def update(self, value):
+        '''Updates the value'''
+        self._value = value
+
     def write_to(self, path):
         '''Writes the values as a CSV to the given path'''

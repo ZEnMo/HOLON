@@ -1,2 +1,2 @@
-# Either bash or python, let's see what's better for the people/servers
+# Let's use bash here so we can check for pipenv installation etc.
 # Runs the etinput tool

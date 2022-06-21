@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from etinput.single_request import SingleRequest
 from etinput.curve import Curve
@@ -29,3 +30,14 @@ def test_request_with_curve_divide(request_with_curve):
     # Check the converter
     assert request_with_curve.converter
     assert isinstance(request_with_curve.converter, DivideBy)
+
+
+def test_calculate(request_with_curve):
+    # Set some values
+    request_with_curve.converter.main_value.update(np.ones(8760))
+    request_with_curve.converter.second_value.update(2)
+
+    request_with_curve.calculate()
+
+    # Did the converter run?
+    assert request_with_curve.converter.main_value.sum() == 8760 / 2

@@ -5,12 +5,12 @@ class SingleRequest(RequestConverter):
         self.key = key
         self.converter = config_data
 
-    def update(self, data):
-        '''Updates the current value(s) of the request with ETM data'''
-        # And starts the calculator?
+    def calculate(self):
+        '''Run the converter of the request'''
+        self.converter.calculate()
 
     def values(self):
         yield from self.converter.required_for_calculation()
 
     def write_to(self, path):
-        self.value.write_to(path)
+        self.converter.main_value.write_to(path / f'{self.key}.csv')

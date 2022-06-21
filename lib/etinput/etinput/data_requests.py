@@ -1,29 +1,35 @@
-from pathlib import Path
 import yaml
 
 from .single_request import SingleRequest
 
 class DataRequests:
-    CONFIG_PATH = Path(__file__).parents[1].resolve() / 'config' /'etinput.yml'
-
-    def __init__(self):
-        self.data_requests = self._load()
+    def __init__(self, single_requests):
+        self.data_requests = single_requests
 
     def all(self):
         '''Generates all requests for parsing'''
         yield from self.data_requests
 
-    def ready_requests(self):
-        '''Retrieve all neccesary queries and endpoints and make them in a nice format'''
+    def ready(self, batches):
+        '''Sort the values from the requests in batches for the endpoints'''
+        for single_request in self.all():
+            for value in single_request.values():
+                batches.add(value)
 
-    def update_info(self, info):
-        '''Update all data_requests'''
+    def convert(self):
+        '''Start converters on all single_requests'''
+        for request in self.all():
+            request.calculate()
 
-    # Private
+    def write_to(self, path):
+        '''Tell all single requests to start writing their data'''
+        for request in self.all():
+            request.write_to(path)
 
-    def _load(self):
+    @classmethod
+    def load_from_path(cls, path):
         '''Loads the data requests from the config'''
-        with open(self.CONFIG_PATH, 'r') as f:
+        with open(path, 'r') as f:
             doc = yaml.load(f, Loader=yaml.FullLoader)
 
-        return [SingleRequest(key, **data) for key, data in doc.items()]
+        return cls([SingleRequest(key, **data) for key, data in doc.items()])
