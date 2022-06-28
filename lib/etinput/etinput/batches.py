@@ -15,9 +15,9 @@ class Batches:
 
     def add(self, value):
         '''Adds a Value to the correct Batch'''
-        if isinstance(value, Curve):
+        if value.endpoint == 'curve':
             self._curves.add(value)
-        elif isinstance(value, Value):
+        elif value.endpoint == 'query':
             self._queries.add(value)
         # elif isinstance(value, NodeProperty):
         #     self._nodes.add(value)

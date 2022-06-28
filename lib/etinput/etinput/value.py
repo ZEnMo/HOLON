@@ -1,7 +1,8 @@
 class Value:
-    def __init__(self, key, value=None):
+    def __init__(self, key, endpoint='query', value=None):
         '''Key is the ETM key'''
         self.key = key
+        self.endpoint = endpoint
         self._value = value
 
     def is_set(self):

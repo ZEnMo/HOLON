@@ -6,7 +6,7 @@ from etinput.value import Value
 
 @pytest.fixture
 def values():
-    return [Value('query_one'), Curve('interconnector_price_curve')]
+    return [Value('query_one', 'query'), Curve('interconnector_price_curve', 'curve')]
 
 def test_add_values(values):
     batches = Batches()

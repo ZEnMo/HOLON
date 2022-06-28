@@ -11,20 +11,25 @@ class RequestConverter:
     def converter(self, config):
         # TODO: Add validation!! What if these are not in the kwargs etc
         self._converter = self._create_converter(
-            self._main_value(config.pop('etm_key'), config.pop('type')),
+            self._as_value(config.pop('value')),
             config
         )
 
     # Private
 
-    def _main_value(self, etm_key, data_type):
+    def _as_value(self, value_data):
+        '''Unpacks data and returns a Value based on it'''
+        return self._value_for(value_data['etm_key'], value_data['data_type'], value_data['type'])
+
+    def _value_for(self, etm_key, data_type, endpoint):
         '''
         Extract which type of data we're dealing with, can be a Curve or a single value
         '''
         if data_type == "curve":
-            return Curve(etm_key)
+            return Curve(etm_key, endpoint)
         else:
-            return Value(etm_key)
+            return Value(etm_key, endpoint)
+        # TODO: add NodeProperty -> data_type can be maybe the property we look for on the node?
 
     def _create_converter(self, main_value, converter_config):
         '''
@@ -38,8 +43,11 @@ class RequestConverter:
                                         converter for this data request.
         '''
         conversion = converter_config.pop('conversion')
-        if conversion == 'divide' and 'divide_by' in converter_config:
-            return converters.DivideBy(main_value, Value(converter_config.pop('divide_by')))
+        if conversion == 'divide' and 'convert_with_value' in converter_config:
+            return converters.DivideBy(
+                main_value,
+                self._as_value(converter_config.pop('convert_with_value'))
+            )
 
         raise MissingRequestInfoException(f'Missing info for request {self.key}')
 

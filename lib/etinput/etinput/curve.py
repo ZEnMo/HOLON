@@ -4,9 +4,9 @@ from etinput.value import Value
 
 
 class Curve(Value):
-    def __init__(self, key, value=np.array(0)):
+    def __init__(self, key, endpoint='query', value=np.array(0)):
         '''Values should be an np.array of 8760 - add validations'''
-        super().__init__(key, value=value)
+        super().__init__(key, endpoint=endpoint, value=value)
 
     def is_set(self):
         '''Bool, returns if the value is set'''

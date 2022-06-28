@@ -8,8 +8,9 @@ from etinput.converters import DivideBy
 
 @pytest.fixture
 def request_with_curve():
-    return SingleRequest('buildings_heating_electricity_curve', type='curve',
-        etm_key='the_curve_key', conversion='divide', divide_by='the_query_key')
+    return SingleRequest('buildings_heating_electricity_curve', value={'data_type':'curve',
+        'etm_key':'the_curve_key', 'type':'query'}, conversion='divide',
+        convert_with_value={'data_type':'curve', 'etm_key':'the_query_key', 'type':'query'})
 
 def test_request_with_curve_divide(request_with_curve):
     # Check if the key is set

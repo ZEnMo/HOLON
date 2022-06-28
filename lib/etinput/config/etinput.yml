@@ -1,6 +1,7 @@
 # Specify the ETM keys of what to retrieve from the ETM and put in the models input folder
 # The name of the item is how it will be named in the output folder:
 #
+# TODO: Review this documentation:
 # Item_name:
 #   type:       Currently only 'curve' is supported
 #   etm_key:    The key of the query to send to the ETM, or the name of the curve
@@ -13,13 +14,23 @@
 
 
 buildings_heating_electricity_curve:
-  type: curve
-  etm_key: '...'
+  value:
+    type: query
+    data_type: curve
+    etm_key: some_query
   conversion: divide
-  divide_by: 'etm_query_x'
+  convert_with_value:
+    type: query
+    data_type: value
+    etm_key: some_other_query
 
 buildings_heating_gas_curve:
-  type: curve
-  etm_key: '...'
+  value:
+    type: query # Could also be a node property
+    data_type: curve
+    etm_key: some_query
   conversion: divide
-  divide_by: 'etm_query_y'
+  convert_with_value:
+    type: query
+    data_type: value
+    etm_key: some_other_query

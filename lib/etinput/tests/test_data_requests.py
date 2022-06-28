@@ -14,6 +14,7 @@ def test_load():
     assert isinstance(next(data_requests.all()), SingleRequest)
 
 def test_ready_batches():
+    # TODO: get this from the FIXTURES?
     data_requests = DataRequests.load_from_path(CONFIG_PATH)
     batches = Batches()
 
@@ -26,6 +27,6 @@ def test_ready_batches():
 
     # Is there something in them now?
     for batch in batches.each():
-        if batch.endpoint == 'nodes': continue # Not yet implemented
+        if batch.endpoint == 'nodes' or batch.endpoint == 'curves': continue # Not yet implemented
 
         assert not batch.is_empty()
