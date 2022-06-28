@@ -26,10 +26,19 @@ class Batch():
 
     def send(self):
         '''Create ETM session with the config stuff and send and handle results'''
-        self.inject_results(ETMConnection(self.endpoint).connect(self.keys()))
+        self._inject_results(ETMConnection(self.endpoint).connect(self.keys()))
 
-    def inject_results(self, results):
-        '''Update the Values with the results from the response'''
+    # Private
 
-        # TODO: a Generator of key value pairs (tuples) is returned. Update these
-        #  values in the batch at the correct key - this means we need a search method..
+    def _inject_results(self, results):
+        '''Update the Values in the batch with the results from the response'''
+        for key, new_value in results:
+            self._search(key).update(new_value)
+
+    def _search(self, key):
+        '''Search for a Value in the batch, used for updating'''
+        for value in self._batch:
+            if value.key == key:
+                return value
+
+        raise KeyError(f'Could not find {key} in batch {self.endpoint}')
