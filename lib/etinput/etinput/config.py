@@ -18,6 +18,7 @@ class Config:
             Config.instance = Config.__Config(self._load())
 
     def __getattr__(self, key):
+        '''Get main keys of the config as attributes'''
         return self.instance.data.get(key, None)
 
     # TODO: parse the Scenario

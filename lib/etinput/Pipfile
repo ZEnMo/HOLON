@@ -11,6 +11,7 @@ requests = "*"
 [dev-packages]
 pytest = "*"
 pylint = "*"
+requests-mock = "*"
 
 [requires]
 python_version = "3.9"

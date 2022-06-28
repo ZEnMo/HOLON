@@ -10,15 +10,4 @@ scenario:
   # create_new: false
   # create_copy: false
 
-endpoints:
-  curves:
-    endpoint: '/curves/'
-    type: get
-  nodes:
-    endpoint: '/nodes/'
-    type: get
-  queries:
-    endpoint: '/'
-    type: put
-
 output_folder: 'Data/'

@@ -1,4 +1,4 @@
-from etinput.etm import ETMSession
+from etinput.etm_session import ETMConnection
 
 class Batch():
     def __init__(self, endpoint):
@@ -26,10 +26,10 @@ class Batch():
 
     def send(self):
         '''Create ETM session with the config stuff and send and handle results'''
-        self.inject_results(ETMSession(self.endpoint).send_request(self.keys()))
+        self.inject_results(ETMConnection(self.endpoint).connect(self.keys()))
 
     def inject_results(self, results):
         '''Update the Values with the results from the response'''
 
-        # Parse the handled_response and update the values. Most probably result is a Generator. See
-        # the etm file for more info
+        # TODO: a Generator of key value pairs (tuples) is returned. Update these
+        #  values in the batch at the correct key - this means we need a search method..
