@@ -10,7 +10,6 @@ def values():
 
 def test_add_values(values):
     batches = Batches()
-    print(values)
 
     # Are they all valid?
     for batch in batches.each():

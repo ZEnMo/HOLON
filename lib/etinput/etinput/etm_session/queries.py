@@ -6,7 +6,7 @@ class ETMQuerySession(ETMSession):
     ENDPOINT = '/'
 
     def send_request(self, keys):
-        json = { 'scenario': { 'gqueries': keys }}
+        json = { 'gqueries': keys }
         yield from self._handle_response(requests.put(self.url(), json=json))
 
     def _handle_response(self, response):

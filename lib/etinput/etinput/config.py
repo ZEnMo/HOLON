@@ -21,8 +21,6 @@ class Config:
         '''Get main keys of the config as attributes'''
         return self.instance.data.get(key, None)
 
-    # TODO: parse the Scenario
-
     def _load(self):
         with open(self.CONFIG_PATH, 'r') as f:
             doc = yaml.load(f, Loader=yaml.FullLoader)

@@ -1,13 +1,13 @@
 # Main configuration for the tool
 
-api_url: 'https://engine.energytransitionmodel.com/api/v3/scenarios/'
+api_url: 'https://beta-engine.energytransitionmodel.com/api/v3/scenarios/'
 
 scenario:
-  id: 922908
-  # TODO: create these attributes
+  id: 1647734 # II3050 nationale sturing
+  # TODO: create these attributes for when you want a new/copy of a scenario?
   # end_year: 2050
   # dataset: nl2019
   # create_new: false
   # create_copy: false
 
-output_folder: 'Data/'
+output_folder: '../../Data/ETM_test'

@@ -26,6 +26,8 @@ class Batch():
 
     def send(self):
         '''Create ETM session with the config stuff and send and handle results'''
+        if not self._batch: return
+
         self._inject_results(ETMConnection(self.endpoint).connect(self.keys()))
 
     # Private

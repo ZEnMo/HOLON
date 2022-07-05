@@ -18,3 +18,4 @@ python_version = "3.9"
 
 [scripts]
 tests = "python -m pytest"
+etm_to_csv = "python scripts/update_etm_input.py"

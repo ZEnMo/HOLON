@@ -28,7 +28,6 @@ class Value:
     def write_to(self, path):
         '''Writes the values as a CSV to the given path'''
         if self.is_set():
-            print(self._value)
             np.savetxt(path, self._value_as_np(), delimiter=',')
         else:
             raise ValueError(f'{str(self)} was not yet set or updated.')

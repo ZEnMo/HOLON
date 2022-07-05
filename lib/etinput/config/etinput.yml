@@ -24,18 +24,18 @@ buildings_heating_electricity_curve:
   value:
     type: query
     data: curve
-    etm_key: some_query
+    etm_key: hourly_household_heat_demand
   conversion: divide
   convert_with_value:
     type: query
     data: value
-    etm_key: some_other_query
+    etm_key: households_heat_demand
 
 buildings_heating_gas_curve:
   value:
-    type: query         # which endpoint
-    data: curve         # what to look for / expect
-    etm_key: some_query # the exact ETM key
+    type: query
+    data: curve
+    etm_key: network_gas_demand_inflexible_curve
   conversion: divide
   convert_with_value:
     type: node_property
