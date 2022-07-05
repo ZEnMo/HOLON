@@ -3,6 +3,7 @@ from pathlib import Path
 
 from etinput.batches import Batches
 from etinput.data_requests import DataRequests
+from etinput.config import Config
 
 CONFIG_PATH = Path(__file__).parents[1].resolve() / 'config' /'etinput.yml'
 
@@ -11,6 +12,5 @@ def retrieve_results():
     batches = Batches()
 
     data_requests.ready(batches)
-
-    # TODO: And now batches.send!
-
+    batches.send()
+    data_requests.write_to(Config().output_folder)

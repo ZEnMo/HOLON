@@ -4,3 +4,4 @@ db.lck
 
 # Etinput specific files
 .pytest_cache
+lib/etinput/tests/tmp

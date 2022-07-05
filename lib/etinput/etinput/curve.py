@@ -17,7 +17,7 @@ class Curve(Value):
 
     def update(self, array):
         '''Updates the value'''
-        self._value = array
+        self._value = np.array(array)
 
     def divide_by(self, other):
         '''Divides itself by the other Value, validates this Value is not zero'''
@@ -33,6 +33,5 @@ class Curve(Value):
     # Later we can add other actions like summing curves, multiplying, etc. We can move
     # them to a module 'operations' when there are starting to be too many
 
-    def write_to(self, path):
-        '''Writes the values as a CSV to the given path'''
-        # Validate if value is set!!
+    def _value_as_np(self):
+        return self._value

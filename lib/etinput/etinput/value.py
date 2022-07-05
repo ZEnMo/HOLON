@@ -1,3 +1,5 @@
+import numpy as np
+
 class Value:
     def __init__(self, key, endpoint='query', value=None):
         '''
@@ -18,10 +20,18 @@ class Value:
 
     def update(self, value):
         '''Updates the value'''
-        self._value = value
+        self._value = float(value)
+
+    def _value_as_np(self):
+        return np.array([self._value])
 
     def write_to(self, path):
         '''Writes the values as a CSV to the given path'''
+        if self.is_set():
+            print(self._value)
+            np.savetxt(path, self._value_as_np(), delimiter=',')
+        else:
+            raise ValueError(f'{str(self)} was not yet set or updated.')
 
     def __str__(self):
         return f'{self.__class__.__name__}({self.key})'
