@@ -1,0 +1,43 @@
+# Specify the ETM keys of what to retrieve from the ETM and put in the models input folder.
+# You can add conversions based on other ETM data to the items.
+# The name of the item is how it will be named in the output folder:
+#
+# <ITEM_NAME>:
+#   value:                The main value on which conversions will be done
+#     type:               Which type of ETM request is needed. Right now only 'query' and
+#                         'node_property' are supported. In the future the curves endpoint
+#                         can be added as well.
+#     data:               What data to look for / expect. For queries this can be either
+#                         'value' or 'curve'. For node properties you can specify which
+#                         property of the node is needed. The path to the property should be
+#                         separated by dots ('.'), for example:
+#                         technical.electricity_output_conversion.future
+#     etm_key:            The key of the query to send to the ETM, or the name of the node
+#   conversion:           If a conversion is nesccesary, please specify. Currently only 'divide'
+#                         is supported.
+#   convert_with_value:   When conversion is set, specify with which ETM value the item should be
+#                         converted with. E.g for 'divide' this is the value to be divided by.
+#                         This value has the same properties as the main 'value' field.
+
+
+buildings_heating_electricity_curve:
+  value:
+    type: query
+    data: curve
+    etm_key: some_query
+  conversion: divide
+  convert_with_value:
+    type: query
+    data: value
+    etm_key: some_other_query
+
+buildings_heating_gas_curve:
+  value:
+    type: query         # which endpoint
+    data: curve         # what to look for / expect
+    etm_key: some_query # the exact ETM key
+  conversion: divide
+  convert_with_value:
+    type: node_property
+    data: technical.electricity_output_conversion.future
+    etm_key: industry_chp_combined_cycle_gas_power_fuelmix

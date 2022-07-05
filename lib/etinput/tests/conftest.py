@@ -1,7 +1,12 @@
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
+from pathlib import Path
 import pytest
+
+@pytest.fixture
+def config_path():
+    return Path('tests/fixtures/etinput_config.yml').resolve()
 
 @pytest.fixture
 def nodes_response_data():

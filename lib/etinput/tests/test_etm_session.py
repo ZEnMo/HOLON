@@ -63,44 +63,18 @@ def test_send_request_to_queries_with_non_existent_query(requests_mock):
         )
         next(result)
 
-def test_send_request_to_nodes(requests_mock):
+def test_send_request_to_nodes(requests_mock, nodes_response_data, helpers):
     connection = ETMConnection('nodes')
     nodes = ['industry_chp_combined_cycle_gas_power_fuelmix', 'node_2']
 
-    response_data = {
-        "technical": {
-            "total_installed_electricity_capacity": {
-                "present": 5443.360123449158,
-                "future": 5443.360123449158,
-                "unit": "MW",
-                "desc": "Installed electrical capacity"
-            },
-        },
-        "cost": {
-            "total_investment_over_lifetime_per_mw_electricity": {
-                "present": "958583",
-                "future": "958583",
-                "unit": "EUR / MW",
-                "desc": "Investment over lifetime per MW"
-            },
-        }
-    }
-
-
-    # QUERIES
-    for node in nodes:
-        requests_mock.get(
-            connection.session.url(node),
-            status_code=200,
-            json={ "data": response_data, "key": node }
-        )
+    helpers.mock_nodes_response(requests_mock, nodes_response_data, connection, nodes)
 
     result = connection.connect(nodes)
 
     first_key, first_val = next(result)
     assert first_key == nodes[0]
-    assert first_val == response_data
+    assert first_val == nodes_response_data
 
     second_key, second_val = next(result)
     assert second_key == nodes[1]
-    assert second_val == response_data
+    assert second_val == nodes_response_data
