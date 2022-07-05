@@ -20,7 +20,7 @@ class Curve(Value):
         self._value = array
 
     def divide_by(self, other):
-        '''Divides itself by the other Value, validate value is not zero, etc'''
+        '''Divides itself by the other Value, validates this Value is not zero'''
         if other._value == 0:
             return
 
@@ -30,7 +30,8 @@ class Curve(Value):
         '''Only used for validation'''
         return self._value.sum()
 
-    # Later we can add other actions like summing curves, multiplying, etc.
+    # Later we can add other actions like summing curves, multiplying, etc. We can move
+    # them to a module 'operations' when there are starting to be too many
 
     def write_to(self, path):
         '''Writes the values as a CSV to the given path'''

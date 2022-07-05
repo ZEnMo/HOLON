@@ -1,5 +1,6 @@
 from etinput.curve import Curve
 from etinput.value import Value
+from etinput.node_property import NodeProperty
 import etinput.converters as converters
 
 class RequestConverter:
@@ -19,17 +20,18 @@ class RequestConverter:
 
     def _as_value(self, value_data):
         '''Unpacks data and returns a Value based on it'''
-        return self._value_for(value_data['etm_key'], value_data['data_type'], value_data['type'])
+        return self._value_for(value_data['etm_key'], value_data['data'], value_data['type'])
 
-    def _value_for(self, etm_key, data_type, endpoint):
+    def _value_for(self, etm_key, data, endpoint):
         '''
         Extract which type of data we're dealing with, can be a Curve or a single value
         '''
-        if data_type == "curve":
+        if data == "curve":
             return Curve(etm_key, endpoint)
+        elif endpoint == "node_property":
+            return NodeProperty(etm_key, node_property=data, endpoint=endpoint)
         else:
             return Value(etm_key, endpoint)
-        # TODO: add NodeProperty -> data_type can be maybe the property we look for on the node?
 
     def _create_converter(self, main_value, converter_config):
         '''

@@ -5,12 +5,20 @@ from etinput.single_request import SingleRequest
 from etinput.curve import Curve
 from etinput.value import Value
 from etinput.converters import DivideBy
+from etinput.node_property import NodeProperty
 
 @pytest.fixture
 def request_with_curve():
-    return SingleRequest('buildings_heating_electricity_curve', value={'data_type':'curve',
+    return SingleRequest('buildings_heating_electricity_curve', value={'data':'curve',
         'etm_key':'the_curve_key', 'type':'query'}, conversion='divide',
-        convert_with_value={'data_type':'curve', 'etm_key':'the_query_key', 'type':'query'})
+        convert_with_value={'data':'curve', 'etm_key':'the_query_key', 'type':'query'})
+
+@pytest.fixture
+def request_with_curve_and_node_property():
+    return SingleRequest('buildings_heating_electricity_curve', value={'data':'curve',
+        'etm_key':'the_curve_key', 'type':'query'}, conversion='divide',
+        convert_with_value={'data':'technical.electricity_output_conversion.future',
+        'etm_key':'industry_chp_combined_cycle_gas_power_fuelmix', 'type':'node_property'})
 
 def test_request_with_curve_divide(request_with_curve):
     # Check if the key is set
@@ -42,3 +50,23 @@ def test_calculate(request_with_curve):
 
     # Did the converter run?
     assert request_with_curve.converter.main_value.sum() == 8760 / 2
+
+def test_request_with_curve_and_node_property(request_with_curve_and_node_property):
+    # Check if the key is set
+    assert request_with_curve_and_node_property.key == 'buildings_heating_electricity_curve'
+
+     # Check the values
+    values = request_with_curve_and_node_property.values()
+    main_value = next(values)
+    assert isinstance(main_value, Curve)
+    assert main_value.is_set() == False
+    assert main_value.key == 'the_curve_key'
+
+    second_value = next(values)
+    assert isinstance(second_value, NodeProperty)
+    assert second_value.is_set() == False
+    assert second_value.key == 'industry_chp_combined_cycle_gas_power_fuelmix'
+
+    # Check the converter
+    assert request_with_curve_and_node_property.converter
+    assert isinstance(request_with_curve_and_node_property.converter, DivideBy)

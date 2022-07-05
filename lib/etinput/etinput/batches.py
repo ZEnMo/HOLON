@@ -1,6 +1,4 @@
 from .batch import Batch
-from .value import Value
-from .curve import Curve
 
 class Batches:
     def __init__(self):
@@ -19,10 +17,10 @@ class Batches:
             self._curves.add(value)
         elif value.endpoint == 'query':
             self._queries.add(value)
-        # elif isinstance(value, NodeProperty):
-        #     self._nodes.add(value)
+        elif value.endpoint == 'node_property':
+            self._nodes.add(value)
         else:
-            raise UnknownValueType(f'The object {value} could not be added to a batch')
+            raise UnknownValueType(f'{value} could not be added to a batch')
 
     def send(self):
         '''Sends all the batches'''

@@ -11,7 +11,7 @@ class DataRequests:
         yield from self.data_requests
 
     def ready(self, batches):
-        '''Sort the values from the requests in batches for the endpoints'''
+        '''Sort the Values from the requests in batches for the endpoints'''
         for single_request in self.all():
             for value in single_request.values():
                 batches.add(value)
