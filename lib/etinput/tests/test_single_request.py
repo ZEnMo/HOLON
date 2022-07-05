@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from etinput.single_request import SingleRequest
+from etinput.single_request import SingleRequest, MissingRequestInfoException
 from etinput.curve import Curve
 from etinput.value import Value
 from etinput.converters import DivideBy
@@ -70,3 +70,26 @@ def test_request_with_curve_and_node_property(request_with_curve_and_node_proper
     # Check the converter
     assert request_with_curve_and_node_property.converter
     assert isinstance(request_with_curve_and_node_property.converter, DivideBy)
+
+
+def test_request_without_correct_value_properties():
+    # With just one value with typos - this is OK here, it will probably mess up
+    # somewhere in the batches
+    SingleRequest('some_key', value={'data':'curves',
+        'etm_key':'the_curve_key', 'type':'query'})
+
+    # With one value with 'type' missing
+    with pytest.raises(MissingRequestInfoException):
+        SingleRequest('some_key', value={'data':'curve',
+            'etm_key':'the_curve_key'})
+
+    # With an unknown conversion
+    with pytest.raises(MissingRequestInfoException):
+        SingleRequest('buildings_heating_electricity_curve', value={'data':'curve',
+            'etm_key':'the_curve_key', 'type':'query'}, conversion='kittens',
+            convert_with_value={'data':'curve', 'etm_key':'the_query_key', 'type':'query'})
+
+    # With a conversion that takes a second value, where this value is not specified
+    with pytest.raises(MissingRequestInfoException):
+        SingleRequest('buildings_heating_electricity_curve', value={'data':'curve',
+            'etm_key':'the_curve_key', 'type':'query'}, conversion='divide')

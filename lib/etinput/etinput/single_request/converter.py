@@ -10,7 +10,6 @@ class RequestConverter:
 
     @converter.setter
     def converter(self, config):
-        # TODO: Add validation!! What if these are not in the kwargs etc
         self._converter = self._create_converter(
             self._as_value(config.pop('value')),
             config
@@ -20,7 +19,7 @@ class RequestConverter:
 
     def _as_value(self, value_data):
         '''Unpacks data and returns a Value based on it'''
-        return self._value_for(value_data['etm_key'], value_data['data'], value_data['type'])
+        return self._value_for(*self._safe_value_params(value_data))
 
     def _value_for(self, etm_key, data, endpoint):
         '''
@@ -33,6 +32,13 @@ class RequestConverter:
         else:
             return Value(etm_key, endpoint)
 
+    def _safe_value_params(self, value_data):
+        '''Return some reasonable info to the user if they messed up the config'''
+        try:
+            return value_data['etm_key'], value_data['data'], value_data['type']
+        except KeyError as err:
+            raise MissingRequestInfoException(f'Missing field {str(err)} in {self.key}') from err
+
     def _create_converter(self, main_value, converter_config):
         '''
         Set the converter and any additional value needed (e.g. DivideBy)
@@ -44,14 +50,17 @@ class RequestConverter:
             converter_config(kwargs):   Has at least the key 'conversion'. Used to determine the
                                         converter for this data request.
         '''
-        conversion = converter_config.pop('conversion')
+        conversion = converter_config.pop('conversion', None)
         if conversion == 'divide' and 'convert_with_value' in converter_config:
             return converters.DivideBy(
                 main_value,
                 self._as_value(converter_config.pop('convert_with_value'))
             )
+        if not conversion:
+            return converters.Empty(main_value)
 
-        raise MissingRequestInfoException(f'Missing info for request {self.key}')
+        raise MissingRequestInfoException(
+            f"Can not create conversion '{conversion}' for {self.key}")
 
 
 class MissingRequestInfoException(BaseException):

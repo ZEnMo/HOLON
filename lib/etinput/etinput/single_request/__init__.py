@@ -1,4 +1,4 @@
-from .converter import RequestConverter
+from .converter import RequestConverter, MissingRequestInfoException
 
 class SingleRequest(RequestConverter):
     def __init__(self, key, **config_data):
