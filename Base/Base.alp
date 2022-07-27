@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.12.202205250339" AlpVersion="8.7.5">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.12.202205250418" AlpVersion="8.7.5">
 <Model>
 	<Id>1658477103134</Id>
 	<Name><![CDATA[Base]]></Name>
@@ -24,6 +24,34 @@
 				<Name><![CDATA[HEAT]]></Name>
 			</Option>
 		</OptionList>
+		<OptionList>
+			<Id>1658908176807</Id>
+			<Name><![CDATA[OL_EnergyAssetType]]></Name>
+			<Option>
+				<Id>1658908177022</Id>
+				<Name><![CDATA[StaticProfile]]></Name>
+			</Option>
+			<Option>
+				<Id>1658908183284</Id>
+				<Name><![CDATA[Ebuffer]]></Name>
+			</Option>
+			<Option>
+				<Id>1658908196637</Id>
+				<Name><![CDATA[Hbuffer]]></Name>
+			</Option>
+			<Option>
+				<Id>1658908199397</Id>
+				<Name><![CDATA[Cbuffer]]></Name>
+			</Option>
+			<Option>
+				<Id>1658908201409</Id>
+				<Name><![CDATA[HeatingSystem]]></Name>
+			</Option>
+			<Option>
+				<Id>1658908206131</Id>
+				<Name><![CDATA[PowerPlant]]></Name>
+			</Option>
+		</OptionList>
 	</OptionLists>
 	<ActiveObjectClasses>
 		<!--   =========   Active Object Class   ========  -->
@@ -32,8 +60,8 @@
 			<Name><![CDATA[Main]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
 			<StartupCode><![CDATA[// read config files
-f_readParams();
-f_readConfig();
+//f_readParams();
+//f_readConfig();
 
 // populate the model agent type populations
 //f_configureBackBone_txt();
@@ -41,7 +69,8 @@ f_configureBackBone();
 
 // add optional KpiVisuals-agent for model monitoring, checks and debugging
 f_addKpiVisuals();
-]]></StartupCode>
+
+hourOfYearStart=hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1658477103138</Id>
@@ -135,6 +164,33 @@ f_addKpiVisuals();
 			<CurrentLevel>1658477103139</CurrentLevel>
 			<ConnectionsId>1658477103135</ConnectionsId>
 			<Variables>
+				<Variable Class="PlainVariable">
+					<Id>1658922523718</Id>
+					<Name><![CDATA[hourOfYearPerMonth]]></Name>
+					<X>60</X><Y>420</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int[]]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[new int[] {0, 744, 1392, 2136, 2856, 3600, 4320, 5064, 5808, 6528, 7272, 7992}]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1658922523721</Id>
+					<Name><![CDATA[hourOfYearStart]]></Name>
+					<X>60</X><Y>450</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1658496701675</Id>
 					<Name><![CDATA[p_timeStep_h]]></Name>
@@ -304,13 +360,13 @@ List<Tuple> energyAssets = selectFrom(config)
 	
 //String energyAssetID;
 String energyAssetcategory;
-String energyAssettype;
+OL_EnergyAssetType energyAssettype;
 String energyAssetparent;
 Double energyAssetcapacity;
 
 for (Tuple energyAsset : energyAssets) {
     energyAssetcategory = energyAsset.get( config.type );
-    energyAssettype = energyAsset.get( config.type2 );
+    energyAssettype = OL_EnergyAssetType.StaticProfile; //energyAsset.get( config.type2 );
     energyAssetparent = energyAsset.get( config.parent );
     energyAssetcapacity = roundToDecimal(energyAsset.get( config.capacity_kw ),2);
     
@@ -323,6 +379,7 @@ for (Tuple energyAsset : energyAssets) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1658494691805</Id>
 					<Name><![CDATA[f_readConfig]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>40</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -340,6 +397,7 @@ sheet2.importFromExternalDB(sourceConnection, "config", "config", true, true);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1658496886351</Id>
 					<Name><![CDATA[f_readParams]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>20</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -387,50 +445,6 @@ sheet1.importFromExternalDB(sourceConnection, "params", "params", true, true);
 }]]></Body>
 				</Function>
 			</Functions>
-			<Connectivity>
-				<Database>
-					<Id>1658478642199</Id>
-					<Name><![CDATA[db_backboneConfig]]></Name>
-					<X>40</X><Y>620</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<DatabaseType>EXCEL_ACCESS</DatabaseType>
-					<ConnectionURL><![CDATA[]]></ConnectionURL>
-					<ConnectOnStartup>true</ConnectOnStartup>
-					<DatabaseName><![CDATA[]]></DatabaseName>
-					<ResourceReference>
-						<PackageName><![CDATA[base]]></PackageName>
-						<ClassName><![CDATA[db_backboneConfig.xlsx]]></ClassName>
-					</ResourceReference>
-					<Host><![CDATA[localhost]]></Host>
-					<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
-					<Login><![CDATA[]]></Login>
-					<Password><![CDATA[]]></Password>
-				</Database>
-				<Database>
-					<Id>1658496755486</Id>
-					<Name><![CDATA[db_backboneParams]]></Name>
-					<X>40</X><Y>650</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<DatabaseType>EXCEL_ACCESS</DatabaseType>
-					<ConnectionURL><![CDATA[]]></ConnectionURL>
-					<ConnectOnStartup>true</ConnectOnStartup>
-					<DatabaseName><![CDATA[]]></DatabaseName>
-					<ResourceReference>
-						<PackageName><![CDATA[base]]></PackageName>
-						<ClassName><![CDATA[db_backboneParams.xlsx]]></ClassName>
-					</ResourceReference>
-					<Host><![CDATA[localhost]]></Host>
-					<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
-					<Login><![CDATA[]]></Login>
-					<Password><![CDATA[]]></Password>
-				</Database>
-			</Connectivity>
 			<AgentLinks>
 				<AgentLink>
 					<Id>1658477103135</Id>
@@ -633,7 +647,7 @@ sheet1.importFromExternalDB(sourceConnection, "params", "params", true, true);
 							<Name><![CDATA[p_parentNodeID]]></Name>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[p_assetTypeString]]></Name>
+							<Name><![CDATA[p_assetType]]></Name>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_assetCategoryString]]></Name>
@@ -1473,9 +1487,10 @@ for( Agent a : subConnections.getConnections() )
 	else if( a instanceof EnergyAsset )
 	{
 		traceln("EnergyAsset!");
-		a = (EnergyAsset)a;
-		c_electricityFlows.put(a, ((EnergyAsset) a).v_currentPower_kW);
-		v_currentPower_kW += ((EnergyAsset) a).v_currentPower_kW;
+		EnergyAsset EA = (EnergyAsset)a;
+		EA.f_updatePower(1.0);
+		c_electricityFlows.put(EA, EA.v_currentPower_kW);
+		v_currentPower_kW += EA.v_currentPower_kW;
 	}
 }
 
@@ -1597,7 +1612,8 @@ traceln( "total load: "+v_currentPower_kW );]]></Body>
 			<Id>1658499506320</Id>
 			<Name><![CDATA[EnergyAsset]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
-			<StartupCode><![CDATA[f_connectToParentNode();]]></StartupCode>
+			<StartupCode><![CDATA[f_connectToParentNode();
+// f_loadProfile();]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1658499506318</Id>
@@ -1708,7 +1724,7 @@ traceln( "total load: "+v_currentPower_kW );]]></Body>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1658750229388</Id>
-					<Name><![CDATA[v_currentPowerLost_kW]]></Name>
+					<Name><![CDATA[v_currentBufferSOC_pct]]></Name>
 					<X>270</X><Y>240</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1730,6 +1746,9 @@ traceln( "total load: "+v_currentPower_kW );]]></Body>
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
+						</DefaultValue>
 						<ParameterEditor>
 							<Id>1658750163611</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
@@ -1762,14 +1781,14 @@ traceln( "total load: "+v_currentPower_kW );]]></Body>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1658750189428</Id>
-					<Name><![CDATA[p_assetTypeString]]></Name>
+					<Name><![CDATA[p_assetType]]></Name>
 					<X>80</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
+						<Type><![CDATA[OL_EnergyAssetType]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -1824,6 +1843,25 @@ NetNode myParentNode = findFirst(main.netNodes, p->p.p_nodeID.equals(p_parentNod
 if( myParentNode instanceof NetNode ) {
 	superConnection.connectTo(myParentNode);
 	myParentNode.f_connectToChild(this);
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1658909154431</Id>
+					<Name><![CDATA[f_updatePower]]></Name>
+					<X>80</X><Y>290</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[powerSetpoint]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[if (p_assetType.equals(OL_EnergyAssetType.StaticProfile)) {
+	v_currentPower_kW = p_capacity_kW*powerSetpoint;
 }
 ]]></Body>
 				</Function>
