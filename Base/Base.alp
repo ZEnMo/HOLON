@@ -28,8 +28,12 @@
 			<Id>1658908176807</Id>
 			<Name><![CDATA[OL_EnergyAssetType]]></Name>
 			<Option>
+				<Id>1658934457614</Id>
+				<Name><![CDATA[PV]]></Name>
+			</Option>
+			<Option>
 				<Id>1658908177022</Id>
-				<Name><![CDATA[StaticProfile]]></Name>
+				<Name><![CDATA[Wind]]></Name>
 			</Option>
 			<Option>
 				<Id>1658908183284</Id>
@@ -70,7 +74,7 @@ f_configureBackBone();
 // add optional KpiVisuals-agent for model monitoring, checks and debugging
 f_addKpiVisuals();
 
-hourOfYearStart=hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></StartupCode>
+v_hourOfYearStart=v_hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1658477103138</Id>
@@ -166,7 +170,7 @@ hourOfYearStart=hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></Sta
 			<Variables>
 				<Variable Class="PlainVariable">
 					<Id>1658922523718</Id>
-					<Name><![CDATA[hourOfYearPerMonth]]></Name>
+					<Name><![CDATA[v_hourOfYearPerMonth]]></Name>
 					<X>60</X><Y>420</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -181,7 +185,7 @@ hourOfYearStart=hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></Sta
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1658922523721</Id>
-					<Name><![CDATA[hourOfYearStart]]></Name>
+					<Name><![CDATA[v_hourOfYearStart]]></Name>
 					<X>60</X><Y>450</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -189,6 +193,30 @@ hourOfYearStart=hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></Sta
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1658937385187</Id>
+					<Name><![CDATA[v_normalizedWind_r]]></Name>
+					<X>750</X><Y>200</Y>
+					<Label><X>10</X><Y>-5</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1658937502210</Id>
+					<Name><![CDATA[v_normalizedPV_r]]></Name>
+					<X>750</X><Y>230</Y>
+					<Label><X>10</X><Y>-5</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -271,6 +299,9 @@ hourOfYearStart=hourOfYearPerMonth[getMonth()] + (getDayOfMonth()-1)*24;]]></Sta
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
 					<Action><![CDATA[// Calculate loads from bottom nodes up
+
+// Prepare timestep
+f_updateProfiles();
 
 /*
 heuristiek: 
@@ -366,7 +397,7 @@ Double energyAssetcapacity;
 
 for (Tuple energyAsset : energyAssets) {
     energyAssetcategory = energyAsset.get( config.type );
-    energyAssettype = OL_EnergyAssetType.StaticProfile; //energyAsset.get( config.type2 );
+    energyAssettype = OL_EnergyAssetType.Wind;//  energyAsset.get( config.type2 ); //energyAsset.get( config.type2 );
     energyAssetparent = energyAsset.get( config.parent );
     energyAssetcapacity = roundToDecimal(energyAsset.get( config.capacity_kw ),2);
     
@@ -444,7 +475,88 @@ sheet1.importFromExternalDB(sourceConnection, "params", "params", true, true);
 	add_kpiVisuals();
 }]]></Body>
 				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1658937342243</Id>
+					<Name><![CDATA[f_updateProfiles]]></Name>
+					<X>750</X><Y>150</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[v_normalizedWind_r = tf_normalizedWind(time(HOUR) + v_hourOfYearStart);
+v_normalizedPV_r = tf_normalizedPV(time(HOUR) + v_hourOfYearStart);]]></Body>
+				</Function>
 			</Functions>
+			<TableFunctions>
+				<TableFunction AccessType="public" StaticFunction="false">
+					<Id>1658934296830</Id>
+					<Name><![CDATA[tf_normalizedWind]]></Name>
+					<X>750</X><Y>50</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<InterpolationMethod>LINEAR</InterpolationMethod>
+					<OutOfRangeBehaviour>REPEATING</OutOfRangeBehaviour>
+					<OutOfRangeCustomValue><![CDATA[0.0]]></OutOfRangeCustomValue>
+					<ApproximationOrder><![CDATA[1]]></ApproximationOrder>
+					<LoadFromDatabase><![CDATA[true]]></LoadFromDatabase>
+					<ValuesQuery>
+						<TableReference>
+							<PackageName><![CDATA[base]]></PackageName>
+							<ClassName><![CDATA[db_profielen]]></ClassName>
+						</TableReference>
+							<ArgumentColumnReference>
+								<PackageName><![CDATA[base]]></PackageName>
+								<ClassName><![CDATA[db_profielen]]></ClassName>
+								<ItemName><![CDATA[db_time]]></ItemName>
+							</ArgumentColumnReference>
+							<ValueColumnReference>
+								<PackageName><![CDATA[base]]></PackageName>
+								<ClassName><![CDATA[db_profielen]]></ClassName>
+								<ItemName><![CDATA[db_normalizedwind]]></ItemName>
+							</ValueColumnReference>
+					</ValuesQuery>
+// arguments and values
+					<Argument><![CDATA[0.0]]></Argument>
+					<Value><![CDATA[0.0]]></Value>
+				</TableFunction>
+				<TableFunction AccessType="public" StaticFunction="false">
+					<Id>1658937516368</Id>
+					<Name><![CDATA[tf_normalizedPV]]></Name>
+					<X>750</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<InterpolationMethod>LINEAR</InterpolationMethod>
+					<OutOfRangeBehaviour>REPEATING</OutOfRangeBehaviour>
+					<OutOfRangeCustomValue><![CDATA[0.0]]></OutOfRangeCustomValue>
+					<ApproximationOrder><![CDATA[1]]></ApproximationOrder>
+					<LoadFromDatabase><![CDATA[true]]></LoadFromDatabase>
+					<ValuesQuery>
+						<TableReference>
+							<PackageName><![CDATA[base]]></PackageName>
+							<ClassName><![CDATA[db_profielen]]></ClassName>
+						</TableReference>
+							<ArgumentColumnReference>
+								<PackageName><![CDATA[base]]></PackageName>
+								<ClassName><![CDATA[db_profielen]]></ClassName>
+								<ItemName><![CDATA[db_time]]></ItemName>
+							</ArgumentColumnReference>
+							<ValueColumnReference>
+								<PackageName><![CDATA[base]]></PackageName>
+								<ClassName><![CDATA[db_profielen]]></ClassName>
+								<ItemName><![CDATA[db_normalizedpv]]></ItemName>
+							</ValueColumnReference>
+					</ValuesQuery>
+// arguments and values
+					<Argument><![CDATA[0.0]]></Argument>
+					<Value><![CDATA[0.0]]></Value>
+				</TableFunction>
+			</TableFunctions>
 			<AgentLinks>
 				<AgentLink>
 					<Id>1658477103135</Id>
@@ -1489,7 +1601,8 @@ for( Agent a : subConnections.getConnections() )
 		traceln("EnergyAsset!");
 		EnergyAsset EA = (EnergyAsset)a;
 		EA.f_updatePower(1.0);
-		c_electricityFlows.put(EA, EA.v_currentPower_kW);
+		//c_electricityFlows.put(EA, EA.v_currentPower_kW);
+		c_electricityFlows.put(EA.v_currentPower_kW);
 		v_currentPower_kW += EA.v_currentPower_kW;
 	}
 }
@@ -1718,7 +1831,7 @@ traceln( "total load: "+v_currentPower_kW );]]></Body>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[double]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[-40]]></Code>
+							<Code><![CDATA[0]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -1860,8 +1973,11 @@ if( myParentNode instanceof NetNode ) {
 						<Name><![CDATA[powerSetpoint]]></Name>
 						<Type><![CDATA[double]]></Type>
 					</Parameter>
-					<Body><![CDATA[if (p_assetType.equals(OL_EnergyAssetType.StaticProfile)) {
-	v_currentPower_kW = p_capacity_kW*powerSetpoint;
+					<Body><![CDATA[if (p_assetType.equals(OL_EnergyAssetType.Wind)) {
+	traceln("Windmill running!");
+	v_currentPower_kW = p_capacity_kW*main.v_normalizedWind_r;
+} else if (p_assetType.equals(OL_EnergyAssetType.PV)) {
+	v_currentPower_kW = p_capacity_kW*main.v_normalizedPV_r;
 }
 ]]></Body>
 				</Function>
